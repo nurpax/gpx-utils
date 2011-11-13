@@ -1,6 +1,6 @@
 {-# LANGUAGE Arrows, NoMonomorphismRestriction #-}
 import Text.XML.HXT.Core
-import Data.Time (UTCTime, readTime)
+import Data.Time (UTCTime, readTime, diffUTCTime)
 import Locale (defaultTimeLocale)
 import Text.Printf (printf)
 
@@ -36,25 +36,45 @@ getTrkseg = atTag "trkseg" >>>
     segments <- listA getTrkpt -< x
     returnA -< Trkseg segments
 
-deg2rad x = 2 * pi * x / 360
-rad2deg x = x * 180 / pi
-
+-- Haversine's formula for computing the length of a segment expressed
+-- in longitude/latitude.
+--
+-- From http://www.movable-type.co.uk/scripts/latlong.html
 segmentLength :: Trkpt -> Trkpt -> Double
-segmentLength a b =
-  let t = deg2rad $ longitude a - longitude b in
-  let d = (sin lat1) * (sin lat2) + (cos lat1) * (cos lat2) * (cos t) in
-  60.0 * 1.1515 * 1.609344 * (rad2deg $ acos d) where
-    lat1 = deg2rad $ latitude a
-    lat2 = deg2rad $ latitude b
+segmentLength pta ptb = r * c where
+  r = 6371 -- Earth's mean radius
+  deg2rad x = 2 * pi * x / 360
+  lat1 = deg2rad $ latitude pta
+  lat2 = deg2rad $ latitude ptb
+  dlat = lat2 - lat1
+  dlon = deg2rad $ longitude ptb - longitude pta
+  a = (sin dlat/2)^2 + (sin dlon/2)^2 * cos lat1 * cos lat2
+  c = 2 * atan2 (sqrt a) (sqrt (1-a))
 
-trackLength :: Trkseg -> Double
-trackLength (Trkseg segs) =
-  sum (map (uncurry $ segmentLength) segments) where
+-- Length of track as (seconds, kms)
+trackLength :: Trkseg -> (Double, Double)
+trackLength (Trkseg segs) = (timeLen, kmLen) where
+    kmLen = sum (map (uncurry segmentLength) segments)
+    timeLen = sum (map (uncurry timeDelta) segments)
     segments = zip segs (tail segs)
+    timeDelta :: Trkpt -> Trkpt -> Double
+    timeDelta a b = realToFrac $ diffUTCTime (time b) (time a)
+
+formatTimeDeltaHMS :: Double -> String
+formatTimeDeltaHMS s =
+  show (floor $ s / 60 / 60) ++ ":" ++
+  show (floor (s / 60) `mod` 60) ++ ":" ++
+  show (floor s `mod` 60)
+
+formatTimeDeltaMS :: Double -> String
+formatTimeDeltaMS s =
+  show (floor $ s / 60) ++ ":" ++ show (floor s `mod` 60)
 
 main :: IO ()
 main =
   do
     trackSegs <- runX (readDocument [withValidate no] "test/activity1.gpx" >>> getTrkseg)
-    let len = trackLength $ head trackSegs
-    putStrLn (printf "Track length: %f" len)
+    let (seconds, lenKm) = trackLength $ head trackSegs
+    putStrLn (printf "Track distance (km):     %f" lenKm)
+    putStrLn (printf "Track duration (h:m:s):  %s" $ formatTimeDeltaHMS seconds)
+    putStrLn (printf "Average pace (min/km):   %s" $ formatTimeDeltaMS (seconds / lenKm))
