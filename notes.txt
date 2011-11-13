@@ -9,7 +9,7 @@ last TrackPoint/DistanceMeters field.
 test/activity1.gpx
 ==================
 
-Garmin connect: 
+Garmin connect:
   Distance:             12.61 (tcx dist: 12606.16015625m)
   Duration:             1:20:37
   Avg pace:             6:24
@@ -28,7 +28,7 @@ RunKeeper:
 test/activity2.gpx
 ==================
 
-Garmin connect: 
+Garmin connect:
   Distance:             8:66 (tcx dist: 8657.080078125m)
   Duration:             0:49:59
   Avg pace:             5:47
@@ -46,7 +46,7 @@ RunKeeper:
 test/activity3.gpx
 ==================
 
-Garmin connect: 
+Garmin connect:
   Distance:             10.01 (tcx dist: 10009.6201171875m)
   Duration:             0:56:24
   Avg pace:             5:38
@@ -60,3 +60,18 @@ gpx.hs (haversine):
   Distance:             10.412150367589039
   Duration:             0:59:20
   Avg pace:             5:41
+
+time delta from gpx:
+  first/last sample:
+      <time>2011-11-02T07:58:15.000Z</time>
+      <time>2011-11-02T08:57:35.000Z</time>
+
+same data from tcx:
+  first/last sample:
+     <Time>2011-11-02T07:58:15.000Z</Time>
+     <Time>2011-11-02T08:57:35.000Z</Time>
+
+
+How can Garmin arrive at 0:56:24 duration?
+
+Also the first 10 or so samples do not have bpm samples.
