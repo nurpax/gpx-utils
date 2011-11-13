@@ -1,0 +1,62 @@
+
+Notes from Garmin, RunKeeper and haversine distance calculations.  My
+own app is not matching with Garmin or RunKeeper, so here's a
+comparison just to keep notes of what the differences look like.
+
+TCX numbers from the same track exported to a .tcx and looking at its
+last TrackPoint/DistanceMeters field.
+
+test/activity1.gpx
+==================
+
+Garmin connect: 
+  Distance:             12.61 (tcx dist: 12606.16015625m)
+  Duration:             1:20:37
+  Avg pace:             6:24
+
+gpx.hs (haversine):
+  Distance:             12.57656400798816
+  Duration:             1:20:37
+  Avg pace:             6:24
+
+RunKeeper:
+  Distance:             12.52
+  Duration:             1:20:34
+  Avg pace:             6:26
+
+
+test/activity2.gpx
+==================
+
+Garmin connect: 
+  Distance:             8:66 (tcx dist: 8657.080078125m)
+  Duration:             0:49:59
+  Avg pace:             5:47
+
+gpx.hs (haversine):
+  Distance:             8.692374799994058
+  Duration:             0:49:59
+  Avg pace:             5:45
+
+RunKeeper:
+  Distance:             8.63
+  Duration:             0:49:56
+  Avg pace:             5:47
+
+test/activity3.gpx
+==================
+
+Garmin connect: 
+  Distance:             10.01 (tcx dist: 10009.6201171875m)
+  Duration:             0:56:24
+  Avg pace:             5:38
+
+RunKeeper:
+  Distance:             10.37
+  Duration:             0:59:20
+  Avg pace:             5:43
+
+gpx.hs (haversine):
+  Distance:             10.412150367589039
+  Duration:             0:59:20
+  Avg pace:             5:41
