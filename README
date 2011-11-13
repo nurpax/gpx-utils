@@ -2,3 +2,9 @@ gpx-utils
 =========
 
 A Haskell app to read a .gpx file and print the track length.
+
+Tested on Haskell platform (as of Nov 13, 2011).  Need to install the
+'hxt' package (http://www.fh-wedel.de/~si/HXmlToolbox/index.html) with:
+
+  cabal install hxt
+
